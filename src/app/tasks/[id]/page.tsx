@@ -2,20 +2,18 @@
 
 import { useAuth } from "../../../../context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, use } from "react"; // Adicionado 'use'
+import { useEffect, useState, use } from "react";
 import { TaskModal } from "../../../../components/tasks/TaskModal";
-import { useTasks } from "../../../../hooks/useTasks";
 import { Task } from "../../../../types";
 import { Loader2 } from "lucide-react";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 
 interface TaskDetailsPageProps {
-  params: Promise<{ id: string }>; // Params agora é uma Promise
+  params: Promise<{ id: string }>;
 }
 
 export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
-  // Desembrulha a promise de params usando React.use()
   const resolvedParams = use(params);
   const taskId = resolvedParams.id;
 
@@ -25,14 +23,12 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
   const [loadingTask, setLoadingTask] = useState(true);
   const [taskFetchError, setTaskFetchError] = useState<string | null>(null);
 
-  // Redireciona se o usuário não estiver logado
   useEffect(() => {
     if (!authLoading && !currentUser) {
       router.push("/login");
     }
   }, [currentUser, authLoading, router]);
 
-  // Busca a tarefa
   useEffect(() => {
     if (currentUser && taskId) {
       const fetchSpecificTask = async () => {
@@ -73,18 +69,18 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
 
   if (authLoading || loadingTask || !currentUser) {
     return (
-      <div className="flex justify-center items-center min-h-[calc(100vh-theme(spacing.24))]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-        <p className="ml-3 text-xl text-gray-700">Carregando detalhes...</p>
+      <div className="flex justify-center items-center min-h-[calc(100vh-(--spacing(24)))] bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="ml-3 text-xl text-muted-foreground">Carregando detalhes...</p>
       </div>
     );
   }
 
   if (taskFetchError) {
     return (
-      <div className="min-h-[calc(100vh-theme(spacing.24))] p-8 bg-gray-50 flex items-center justify-center">
-        <p className="text-xl text-red-600">{taskFetchError}</p>
-        <button onClick={() => router.push("/dashboard")} className="ml-4 text-blue-600 hover:underline">Voltar</button>
+      <div className="min-h-[calc(100vh-(--spacing(24)))] p-8 bg-background flex items-center justify-center">
+        <p className="text-xl text-destructive">{taskFetchError}</p>
+        <button onClick={() => router.push("/dashboard")} className="ml-4 text-primary hover:underline">Voltar</button>
       </div>
     );
   }
@@ -92,7 +88,7 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
   if (!taskDetails) return null;
 
   return (
-    <div className="min-h-[calc(100vh-theme(spacing.24))] p-8 bg-gray-50 flex justify-center items-start">
+    <div className="min-h-[calc(100vh-(--spacing(24)))] p-8 bg-background flex justify-center items-start">
       <TaskModal
         task={taskDetails}
         isOpen={true}

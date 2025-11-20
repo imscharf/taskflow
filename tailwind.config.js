@@ -6,6 +6,8 @@ module.exports = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    // Caminho necessário para componentes do Tremor
+    './node_modules/@tremor/**/*.{js,ts,jsx,tsx}', 
   ],
   theme: {
     container: {
@@ -49,6 +51,36 @@ module.exports = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        // Cores mapeadas para o Tremor usar as variáveis do tema
+        tremor: {
+          brand: {
+            faint: "#eff6ff", 
+            muted: "#bfdbfe", 
+            subtle: "#60a5fa", 
+            DEFAULT: "#3b82f6", 
+            emphasis: "#1d4ed8", 
+            inverted: "#ffffff", 
+          },
+          background: {
+            muted: "#f9fafb", 
+            subtle: "#f3f4f6", 
+            DEFAULT: "hsl(var(--background))",
+            emphasis: "#374151", 
+          },
+          border: {
+            DEFAULT: "hsl(var(--border))",
+          },
+          ring: {
+            DEFAULT: "hsl(var(--ring))",
+          },
+          content: {
+            subtle: "#9ca3af", 
+            DEFAULT: "hsl(var(--foreground))",
+            emphasis: "#374151", 
+            strong: "#111827", 
+            inverted: "#ffffff", 
+          },
         },
       },
       borderRadius: {

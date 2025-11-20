@@ -1,4 +1,3 @@
-// taskflow/app/calendar/page.tsx
 "use client";
 
 import { useAuth } from "../../../context/AuthContext";
@@ -7,10 +6,10 @@ import { useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import timeGridPlugin from "@fullcalendar/timegrid"; // Opcional, para visualizações de semana/dia
+import timeGridPlugin from "@fullcalendar/timegrid";
 import { useTasks } from "../../../hooks/useTasks";
 import { Task } from "../../../types";
-import { TaskModal } from "../../../components/tasks/TaskModal"; // Reutiliza o modal de edição
+import { TaskModal } from "../../../components/tasks/TaskModal";
 
 export default function CalendarPage() {
   const { currentUser, loading: authLoading } = useAuth();
@@ -18,7 +17,6 @@ export default function CalendarPage() {
   const router = useRouter();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-  // Redireciona se o usuário não estiver logado
   useEffect(() => {
     if (!authLoading && !currentUser) {
       router.push("/login");
@@ -27,33 +25,23 @@ export default function CalendarPage() {
 
   if (authLoading || !currentUser) {
     return (
-      <div className="flex justify-center items-center min-h-[calc(100vh-theme(spacing.24))]">
-        <p className="text-xl text-gray-700">Carregando calendário...</p>
+      <div className="flex justify-center items-center min-h-[calc(100vh-(--spacing(24)))] bg-background">
+        <p className="text-xl text-muted-foreground">Carregando calendário...</p>
       </div>
     );
   }
 
-  // Mapeia as tarefas para o formato de eventos do FullCalendar
   const events = tasks.map((task) => ({
     id: task.id,
     title: task.title,
-    start: task.dueDate, // Usa a data de vencimento como início do evento
-    // end: task.dueDate, // Opcional, para eventos que duram o dia todo
+    start: task.dueDate,
     allDay: true,
-    backgroundColor: task.status === "Concluído" ? "#10B981" : "#3B82F6", // Cores baseadas no status
+    backgroundColor: task.status === "Concluído" ? "#10B981" : "#3B82F6",
     borderColor: task.status === "Concluído" ? "#059669" : "#2563EB",
     textColor: "#ffffff",
-    extendedProps: { // Informações adicionais da tarefa
-      description: task.description,
-      priority: task.priority,
-      status: task.status,
-      subtasks: task.subtasks,
-      progress: task.progress,
-    }
   }));
 
   const handleEventClick = (clickInfo: any) => {
-    // Encontra a tarefa original pelo ID do evento
     const clickedTask = tasks.find(task => task.id === clickInfo.event.id);
     if (clickedTask) {
       setSelectedTask(clickedTask);
@@ -61,9 +49,8 @@ export default function CalendarPage() {
   };
 
   const handleEventDrop = async (dropInfo: any) => {
-    // Logic to update the task's due date in Firestore
     const taskId = dropInfo.event.id;
-    const newDueDate = dropInfo.event.startStr.split('T')[0]; // Pega apenas a data sem a hora
+    const newDueDate = dropInfo.event.startStr.split('T')[0];
     
     try {
       await useTasks().updateTask(taskId, { dueDate: newDueDate });
@@ -74,16 +61,15 @@ export default function CalendarPage() {
     }
   };
 
-
   return (
-    <div className="min-h-[calc(100vh-theme(spacing.24))] p-8 bg-gray-50">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">Calendário de Tarefas</h1>
-      <p className="text-xl text-gray-600 mb-8">Visualize suas tarefas por data de vencimento.</p>
+    <div className="min-h-[calc(100vh-(--spacing(24)))] p-8 bg-background transition-colors duration-300">
+      <h1 className="text-4xl font-bold text-foreground mb-6">Calendário de Tarefas</h1>
+      <p className="text-xl text-muted-foreground mb-8">Visualize suas tarefas por data de vencimento.</p>
 
-      {tasksLoading && <p className="text-center text-gray-600">Carregando tarefas do calendário...</p>}
-      {tasksError && <p className="text-center text-red-600">{tasksError}</p>}
+      {tasksLoading && <p className="text-center text-muted-foreground">Carregando tarefas do calendário...</p>}
+      {tasksError && <p className="text-center text-destructive">{tasksError}</p>}
 
-      <div className="bg-white p-6 rounded-lg shadow-md">
+      <div className="bg-card text-card-foreground p-6 rounded-lg shadow-md border border-border">
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
@@ -92,12 +78,12 @@ export default function CalendarPage() {
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
-          locale="pt-br" // Define o idioma para português
+          locale="pt-br"
           events={events}
-          eventClick={handleEventClick} // Abre o modal ao clicar no evento
-          editable={true} // Permite arrastar e soltar eventos
-          eventDrop={handleEventDrop} // Lida com o evento de arrastar e soltar
-          // Outras opções do FullCalendar podem ser adicionadas aqui
+          eventClick={handleEventClick}
+          editable={true}
+          eventDrop={handleEventDrop}
+          height="auto"
         />
       </div>
 

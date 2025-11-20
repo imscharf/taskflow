@@ -1,4 +1,3 @@
-// taskflow/components/auth/SignUpForm.tsx
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -9,7 +8,6 @@ import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
 import { toast } from "sonner";
 
-// Tipagem inferida do esquema Zod
 type SignUpFormInputs = z.infer<typeof signupSchema>;
 
 export function SignUpForm() {
@@ -31,16 +29,14 @@ export function SignUpForm() {
     setError(null);
     try {
       await signup(data.email, data.password);
-      // Redirecionar para o dashboard ou mostrar mensagem de sucesso
       toast.success("Cadastro realizado com sucesso! Faça login para continuar.");
-      reset(); // Limpa o formulário
+      reset();
     } catch (err: any) {
       console.error("Erro no cadastro:", err);
-      // Erros comuns do Firebase:
       if (err.code === "auth/email-already-in-use") {
         setError("Este email já está em uso.");
       } else if (err.code === "auth/weak-password") {
-        setError("A senha é muito fraca."); // Embora Zod já valide, Firebase pode ter regras adicionais
+        setError("A senha é muito fraca.");
       } else {
         setError("Erro ao cadastrar. Tente novamente.");
       }
@@ -50,54 +46,59 @@ export function SignUpForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-8 border rounded-lg shadow-lg bg-white">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Cadastrar</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <div className="w-full max-w-md p-8 rounded-xl shadow-xl bg-card border border-border">
+      <h2 className="text-3xl font-bold mb-6 text-center text-foreground">Cadastrar</h2>
+      
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+          <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">Email</label>
           <input
             id="email"
             type="email"
             {...register("email")}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+            placeholder="seu@email.com"
           />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+          {errors.email && <p className="mt-1 text-sm text-destructive font-medium">{errors.email.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Senha</label>
+          <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1">Senha</label>
           <input
             id="password"
             type="password"
             {...register("password")}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+            placeholder="Mínimo 8 caracteres"
           />
-          {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+          {errors.password && <p className="mt-1 text-sm text-destructive font-medium">{errors.password.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirmar Senha</label>
+          <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-1">Confirmar Senha</label>
           <input
             id="confirmPassword"
             type="password"
             {...register("confirmPassword")}
-            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+            placeholder="Repita a senha"
           />
-          {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword.message}</p>}
+          {errors.confirmPassword && <p className="mt-1 text-sm text-destructive font-medium">{errors.confirmPassword.message}</p>}
         </div>
 
-        {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+        {error && <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm text-center font-medium">{error}</div>}
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+          className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-md"
         >
           {loading ? "Cadastrando..." : "Cadastrar"}
         </button>
       </form>
-      <p className="mt-4 text-center text-sm text-gray-600">
-        Já tem uma conta? <a href="/login" className="font-medium text-blue-600 hover:text-blue-500">Faça login</a>
+      
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Já tem uma conta? <a href="/login" className="font-semibold text-primary hover:underline">Faça login</a>
       </p>
     </div>
   );
