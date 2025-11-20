@@ -1,10 +1,9 @@
-// taskflow/app/tasks/[id]/page.tsx
 "use client";
 
 import { useAuth } from "../../../../context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { TaskModal } from "../../../../components/tasks/TaskModal"; // Reutiliza o modal para exibir/editar
+import { useEffect, useState, use } from "react"; // Adicionado 'use'
+import { TaskModal } from "../../../../components/tasks/TaskModal";
 import { useTasks } from "../../../../hooks/useTasks";
 import { Task } from "../../../../types";
 import { Loader2 } from "lucide-react";
@@ -12,20 +11,19 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "../../../../lib/firebase";
 
 interface TaskDetailsPageProps {
-  params: {
-    id: string; // O ID da tarefa virá dos parâmetros da URL
-  };
+  params: Promise<{ id: string }>; // Params agora é uma Promise
 }
 
 export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
+  // Desembrulha a promise de params usando React.use()
+  const resolvedParams = use(params);
+  const taskId = resolvedParams.id;
+
   const { currentUser, loading: authLoading } = useAuth();
   const router = useRouter();
-  const { tasks, loading: tasksLoading, error: tasksError } = useTasks(); // Para ter acesso à lista atualizada
   const [taskDetails, setTaskDetails] = useState<Task | null>(null);
   const [loadingTask, setLoadingTask] = useState(true);
   const [taskFetchError, setTaskFetchError] = useState<string | null>(null);
-
-  const taskId = params.id;
 
   // Redireciona se o usuário não estiver logado
   useEffect(() => {
@@ -34,7 +32,7 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
     }
   }, [currentUser, authLoading, router]);
 
-  // Busca a tarefa específica se ela não estiver no `useTasks` hook ou para garantir que é a mais recente
+  // Busca a tarefa
   useEffect(() => {
     if (currentUser && taskId) {
       const fetchSpecificTask = async () => {
@@ -45,8 +43,7 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
-            // Mapeia o documento do Firestore para o tipo Task
-            const data = docSnap.data() as any; // Usar 'any' temporariamente, idealmente mapear com `mapFirestoreDocToTask`
+            const data = docSnap.data() as any;
             setTaskDetails({
               id: docSnap.id,
               userId: data.userId,
@@ -57,8 +54,8 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
               status: data.status,
               subtasks: data.subtasks || [],
               progress: data.progress || 0,
-              createdAt: data.createdAt?.toDate().getTime() || Date.now(),
-              updatedAt: data.updatedAt?.toDate().getTime() || Date.now(),
+              createdAt: data.createdAt?.toDate ? data.createdAt.toDate().getTime() : Date.now(),
+              updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate().getTime() : Date.now(),
             });
           } else {
             setTaskFetchError("Tarefa não encontrada.");
@@ -74,12 +71,11 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
     }
   }, [currentUser, taskId]);
 
-
   if (authLoading || loadingTask || !currentUser) {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-theme(spacing.24))]">
         <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-        <p className="ml-3 text-xl text-gray-700">Carregando detalhes da tarefa...</p>
+        <p className="ml-3 text-xl text-gray-700">Carregando detalhes...</p>
       </div>
     );
   }
@@ -88,26 +84,19 @@ export default function TaskDetailsPage({ params }: TaskDetailsPageProps) {
     return (
       <div className="min-h-[calc(100vh-theme(spacing.24))] p-8 bg-gray-50 flex items-center justify-center">
         <p className="text-xl text-red-600">{taskFetchError}</p>
+        <button onClick={() => router.push("/dashboard")} className="ml-4 text-blue-600 hover:underline">Voltar</button>
       </div>
     );
   }
 
-  if (!taskDetails) {
-    return (
-      <div className="min-h-[calc(100vh-theme(spacing.24))] p-8 bg-gray-50 flex items-center justify-center">
-        <p className="text-xl text-gray-700">Tarefa não disponível.</p>
-      </div>
-    );
-  }
+  if (!taskDetails) return null;
 
   return (
     <div className="min-h-[calc(100vh-theme(spacing.24))] p-8 bg-gray-50 flex justify-center items-start">
-      {/* Reutiliza o TaskModal para exibir e editar a tarefa */}
-      {/* O TaskModal já possui o botão de fechar, então ele se comportará como uma página modal */}
       <TaskModal
         task={taskDetails}
-        isOpen={true} // Sempre aberto quando nesta página
-        onClose={() => router.push("/dashboard")} // Ao fechar, volta para o dashboard
+        isOpen={true}
+        onClose={() => router.push("/dashboard")}
       />
     </div>
   );
