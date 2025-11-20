@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Opcional: para Aceternity UI */
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+/* Fim opcional */
+
+/* Estilos para FullCalendar */
+.fc .fc-button-primary {
+    background-color: #3B82F6 !important; /* Tailwind blue-600 */
+    border-color: #2563EB !important; /* Tailwind blue-700 */
+    color: #ffffff !important;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #2563EB !important;
+}
+
+.fc-daygrid-event {
+    border-radius: 0.25rem; /* rounded-md */
+    padding: 0.25rem 0.5rem; /* p-1 px-2 */
+    font-size: 0.875rem; /* text-sm */
+    cursor: pointer;
+}
+
+.fc-event-main {
+    white-space: normal; /* Permite que o texto quebre linha */
+    line-height: 1.2;
+}
+
+/* Ajustes para responsividade do FullCalendar */
+.fc-toolbar-title {
+    font-size: 1.25rem !important; /* text-xl */
+    margin: 0.5rem 0 !important;
+}
+
+@media (max-width: 768px) {
+    .fc .fc-toolbar.fc-header-toolbar {
+        flex-direction: column;
+        align-items: center;
+    }
+    .fc .fc-toolbar-chunk {
+        margin-bottom: 0.5rem;
+    }
+    .fc .fc-button-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Opcional: para Aceternity UI */
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+/* Fim opcional */
+
+/* Estilos para FullCalendar */
+.fc .fc-button-primary {
+    background-color: #3B82F6 !important; /* Tailwind blue-600 */
+    border-color: #2563EB !important; /* Tailwind blue-700 */
+    color: #ffffff !important;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: #2563EB !important;
+}
+
+.fc-daygrid-event {
+    border-radius: 0.25rem; /* rounded-md */
+    padding: 0.25rem 0.5rem; /* p-1 px-2 */
+    font-size: 0.875rem; /* text-sm */
+    cursor: pointer;
+}
+
+.fc-event-main {
+    white-space: normal; /* Permite que o texto quebre linha */
+    line-height: 1.2;
+}
+
+/* Ajustes para responsividade do FullCalendar */
+.fc-toolbar-title {
+    font-size: 1.25rem !important; /* text-xl */
+    margin: 0.5rem 0 !important;
+}
+
+@media (max-width: 768px) {
+    .fc .fc-toolbar.fc-header-toolbar {
+        flex-direction: column;
+        align-items: center;
+    }
+    .fc .fc-toolbar-chunk {
+        margin-bottom: 0.5rem;
+    }
+    .fc .fc-button-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
