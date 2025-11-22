@@ -1,59 +1,13 @@
-// taskflow/hooks/useTasks.ts
 import { useState, useEffect, useCallback } from 'react';
-import { db } from '../lib/firebase';
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  doc,
-  deleteDoc,
-  serverTimestamp,
-  QueryDocumentSnapshot,
-  DocumentData, // Importar DocumentData
-} from 'firebase/firestore';
+import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { Task, Subtask, TaskPriority, TaskFirestore } from '../types';
+import { Task, TaskPriority } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 
-const calculateProgress = (subtasks: Subtask[]): number => {
-  if (subtasks.length === 0) return 0;
-  const completedSubtasks = subtasks.filter(sub => sub.completed).length;
+const calculateProgress = (subtasks: any[]): number => {
+  if (!subtasks || subtasks.length === 0) return 0;
+  const completedSubtasks = subtasks.filter((sub: any) => sub.completed).length;
   return Math.round((completedSubtasks / subtasks.length) * 100);
-};
-
-// Ajuste nesta função
-const mapFirestoreDocToTask = (doc: QueryDocumentSnapshot<DocumentData>): Task => {
-  // Faz um cast para TaskFirestore. Assumimos que os dados no Firestore seguem esta estrutura.
-  const data = doc.data() as TaskFirestore; 
-  
-  // Função auxiliar para converter Timestamp ou retornar número
-  const convertTimestampToNumber = (timestampLike: any): number => {
-    // Verifica se é um objeto e tem o método .toDate() (indicando um Firebase Timestamp)
-    if (timestampLike && typeof timestampLike === 'object' && 'toDate' in timestampLike && typeof timestampLike.toDate === 'function') {
-      return timestampLike.toDate().getTime();
-    }
-    // Caso contrário, assume que já é um número (Unix timestamp) ou retorna 0/NaN se não for válido
-    return typeof timestampLike === 'number' ? timestampLike : 0; 
-  };
-
-  return {
-    id: doc.id,
-    userId: data.userId,
-    title: data.title,
-    description: data.description,
-    dueDate: data.dueDate,
-    priority: data.priority,
-    status: data.status,
-    subtasks: data.subtasks || [],
-    progress: data.progress,
-    // Usa a função auxiliar para createdAt e updatedAt
-    createdAt: convertTimestampToNumber(data.createdAt), 
-    updatedAt: convertTimestampToNumber(data.updatedAt),
-  };
 };
 
 export function useTasks() {
@@ -62,39 +16,32 @@ export function useTasks() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Função para buscar tarefas via Axios
+  const fetchTasks = useCallback(async () => {
+    if (!currentUser) return;
+    
+    try {
+      // Chamada à API criada (Route Handler)
+      const response = await axios.get(`/api/tasks?userId=${currentUser.uid}`);
+      setTasks(response.data);
+      setError(null);
+    } catch (err) {
+      console.error("Erro ao buscar tarefas:", err);
+      setError("Erro ao carregar tarefas.");
+    } finally {
+      setLoading(false);
+    }
+  }, [currentUser]);
+
+  // Carrega tarefas inicial
   useEffect(() => {
-    if (!currentUser) {
+    if (currentUser) {
+      fetchTasks();
+    } else {
       setTasks([]);
       setLoading(false);
-      return;
     }
-
-    setLoading(true);
-    const tasksCollectionRef = collection(db, "tasks");
-    
-    const q = query(
-      tasksCollectionRef,
-      where("userId", "==", currentUser.uid),
-      orderBy("createdAt", "desc")
-    );
-
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        // Agora, o snapshot.docs.map espera o tipo QueryDocumentSnapshot<DocumentData>
-        const fetchedTasks: Task[] = snapshot.docs.map(mapFirestoreDocToTask);
-        setTasks(fetchedTasks);
-        setLoading(false);
-      },
-      (err) => {
-        console.error("Erro ao buscar tarefas:", err);
-        setError("Erro ao carregar tarefas.");
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, [currentUser]);
+  }, [currentUser, fetchTasks]);
 
   const addTask = useCallback(async (
     title: string,
@@ -105,9 +52,8 @@ export function useTasks() {
   ) => {
     if (!currentUser) throw new Error("Usuário não autenticado.");
 
-    setError(null);
     try {
-      const initialSubtasks: Subtask[] = subtasksTitles.map(title => ({
+      const initialSubtasks = subtasksTitles.map(title => ({
         id: uuidv4(),
         title,
         completed: false,
@@ -115,11 +61,7 @@ export function useTasks() {
 
       const initialProgress = calculateProgress(initialSubtasks);
 
-      // Criamos um objeto que é compatível com Firestore, que pode receber Timestamps
-      const taskDataForFirestore: Omit<TaskFirestore, 'id' | 'createdAt' | 'updatedAt'> & {
-        createdAt: any; // serverTimestamp() retorna um tipo especial
-        updatedAt: any; // serverTimestamp() retorna um tipo especial
-      } = {
+      const newTaskData = {
         userId: currentUser.uid,
         title,
         description,
@@ -128,34 +70,40 @@ export function useTasks() {
         status: "A Fazer",
         subtasks: initialSubtasks,
         progress: initialProgress,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
       };
+
+      // POST via Axios
+      await axios.post('/api/tasks', newTaskData);
       
-      await addDoc(collection(db, "tasks"), taskDataForFirestore);
+      // Atualiza a lista após adicionar
+      await fetchTasks();
 
     } catch (err: any) {
       console.error("Erro ao adicionar tarefa:", err);
       setError("Não foi possível adicionar a tarefa.");
       throw err;
     }
-  }, [currentUser]);
+  }, [currentUser, fetchTasks]);
 
-  const updateTask = useCallback(async (taskId: string, updatedFields: Partial<Omit<Task, 'id' | 'userId' | 'createdAt'>>) => {
+  const updateTask = useCallback(async (taskId: string, updatedFields: Partial<Task>) => {
     if (!currentUser) throw new Error("Usuário não autenticado.");
-    setError(null);
+    
     try {
-      const taskRef = doc(db, "tasks", taskId);
-      let fieldsToUpdate: Partial<DocumentData> = { ...updatedFields }; // Tipo DocumentData aqui
+      let fieldsToUpdate: any = { ...updatedFields };
       
       if (updatedFields.subtasks !== undefined) {
         fieldsToUpdate.progress = calculateProgress(updatedFields.subtasks);
       }
       
-      await updateDoc(taskRef, {
-        ...fieldsToUpdate,
-        updatedAt: serverTimestamp(),
-      });
+      // PUT via Axios
+      await axios.put(`/api/tasks/${taskId}`, fieldsToUpdate);
+      
+      // Atualiza a lista após editar
+      // Otimização otimista: atualiza o estado local antes para ser rápido
+      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...fieldsToUpdate } : t));
+      
+      // Opcional: recarregar do servidor para garantir consistência
+      // await fetchTasks(); 
     } catch (err: any) {
       console.error("Erro ao atualizar tarefa:", err);
       setError("Não foi possível atualizar a tarefa.");
@@ -165,10 +113,13 @@ export function useTasks() {
 
   const deleteTask = useCallback(async (taskId: string) => {
     if (!currentUser) throw new Error("Usuário não autenticado.");
-    setError(null);
+    
     try {
-      const taskRef = doc(db, "tasks", taskId);
-      await deleteDoc(taskRef);
+      // DELETE via Axios
+      await axios.delete(`/api/tasks/${taskId}`);
+      
+      // Atualiza a lista removendo o item localmente
+      setTasks(prev => prev.filter(t => t.id !== taskId));
     } catch (err: any) {
       console.error("Erro ao deletar tarefa:", err);
       setError("Não foi possível deletar a tarefa.");
@@ -176,5 +127,5 @@ export function useTasks() {
     }
   }, [currentUser]);
 
-  return { tasks, loading, error, addTask, updateTask, deleteTask };
+  return { tasks, loading, error, addTask, updateTask, deleteTask, refreshTasks: fetchTasks };
 }

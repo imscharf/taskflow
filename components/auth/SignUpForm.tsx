@@ -28,7 +28,8 @@ export function SignUpForm() {
     setLoading(true);
     setError(null);
     try {
-      await signup(data.email, data.password);
+      // Passando o nome para a função de cadastro
+      await signup(data.email, data.password, data.name);
       toast.success("Cadastro realizado com sucesso! Faça login para continuar.");
       reset();
     } catch (err: any) {
@@ -50,6 +51,19 @@ export function SignUpForm() {
       <h2 className="text-3xl font-bold mb-6 text-center text-foreground">Cadastrar</h2>
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {/* Campo Nome Adicionado */}
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">Nome Completo</label>
+          <input
+            id="name"
+            type="text"
+            {...register("name")}
+            className="w-full px-4 py-2 border border-input rounded-lg bg-background text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+            placeholder="Seu Nome"
+          />
+          {errors.name && <p className="mt-1 text-sm text-destructive font-medium">{errors.name.message}</p>}
+        </div>
+
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1">Email</label>
           <input

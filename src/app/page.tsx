@@ -3,25 +3,32 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { Spotlight } from "../../components/ui/Spotlight"; // Importar Spotlight
 
 export default function HomePage() {
   return (
-    <div className="relative w-full min-h-[calc(90vh-4.5rem)] flex flex-col items-center justify-center bg-background overflow-hidden px-4">
+    <div className="relative w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-background overflow-hidden px-4">
       
-      {/* Efeitos de Fundo (Blobs de luz) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Luz Azul (Topo Esquerda) */}
-        <div className="absolute -top-[20%] -left-[10%] w-[500px] h-[500px] bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-[100px]" />
-        
-        {/* Luz Roxa (Baixo Direita) */}
-        <div className="absolute -bottom-[20%] -right-[10%] w-[500px] h-[500px] bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-[100px]" />
+      {/* Aceternity UI Spotlight Effect */}
+      <div className="hidden md:block">
+        <Spotlight
+          className="-top-40 left-0 md:left-60 md:-top-20"
+          fill="hsl(var(--primary))" // Usa a cor primária do tema
+        />
       </div>
 
-      {/* Conteúdo Principal */}
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
-        
-        {/* Badge "Novidade" (Opcional, visual moderno) */}
-        <motion.div
+      {/* Efeitos de Fundo (Mantivemos os blobs originais também para suporte mobile) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[20%] -left-[10%] w-[500px] h-[500px] bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-[20%] -right-[10%] w-[500px] h-[500px] bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-[100px]" />
+      </div>
+
+      {/* ... Resto do código da Landing Page (Título, Botões, etc) ... */}
+      {/* O conteúdo permanece o mesmo da última versão que te mandei, apenas o wrapper acima mudou */}
+      <div className="relative z-10 max-w-4xl mx-auto text-center pt-20"> 
+         {/* ... Conteúdo igual ao anterior ... */}
+         {/* Apenas repita o conteúdo da motion.div, h1, p, buttons, etc */}
+         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -34,7 +41,6 @@ export default function HomePage() {
           v1.0 Disponível
         </motion.div>
 
-        {/* Título Principal */}
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -47,7 +53,6 @@ export default function HomePage() {
           </span>
         </motion.h1>
 
-        {/* Subtítulo */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -57,7 +62,6 @@ export default function HomePage() {
           O TaskFlow une simplicidade e poder. Organize projetos, acompanhe prazos e aumente sua produtividade com nossa metodologia intuitiva.
         </motion.p>
 
-        {/* Botões de Ação */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -78,7 +82,6 @@ export default function HomePage() {
           </Link>
         </motion.div>
 
-        {/* Feature Highlights (Pequena lista abaixo dos botões) */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

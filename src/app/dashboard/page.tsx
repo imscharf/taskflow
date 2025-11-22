@@ -51,7 +51,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-[calc(100vh-(--spacing(24)))] p-8 bg-background transition-colors duration-300">
-      <h1 className="text-4xl font-bold text-foreground mb-6">Olá, {currentUser.email}!</h1>
+      <h1 className="text-4xl font-bold text-foreground mb-6">Olá, {currentUser.displayName}!</h1>
       <p className="text-xl text-muted-foreground mb-8">Bem-vindo ao seu Dashboard TaskFlow.</p>
 
       {tasksLoading && <p className="text-center text-muted-foreground">Carregando suas tarefas...</p>}

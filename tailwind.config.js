@@ -7,7 +7,7 @@ module.exports = {
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
     // Caminho necessário para componentes do Tremor
-    './node_modules/@tremor/**/*.{js,ts,jsx,tsx}', 
+    './node_modules/@tremor/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     container: {
@@ -52,21 +52,36 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        animation: {
+          spotlight: "spotlight 2s ease .75s 1 forwards",
+        },
+        keyframes: {
+          spotlight: {
+            "0%": {
+              opacity: 0,
+              transform: "translate(-72%, -62%) scale(0.5)",
+            },
+            "100%": {
+              opacity: 1,
+              transform: "translate(-50%,-40%) scale(1)",
+            },
+          },
+        },
         // Cores mapeadas para o Tremor usar as variáveis do tema
         tremor: {
           brand: {
-            faint: "#eff6ff", 
-            muted: "#bfdbfe", 
-            subtle: "#60a5fa", 
-            DEFAULT: "#3b82f6", 
-            emphasis: "#1d4ed8", 
-            inverted: "#ffffff", 
+            faint: "#eff6ff",
+            muted: "#bfdbfe",
+            subtle: "#60a5fa",
+            DEFAULT: "#3b82f6",
+            emphasis: "#1d4ed8",
+            inverted: "#ffffff",
           },
           background: {
-            muted: "#f9fafb", 
-            subtle: "#f3f4f6", 
+            muted: "#f9fafb",
+            subtle: "#f3f4f6",
             DEFAULT: "hsl(var(--background))",
-            emphasis: "#374151", 
+            emphasis: "#374151",
           },
           border: {
             DEFAULT: "hsl(var(--border))",
@@ -75,11 +90,11 @@ module.exports = {
             DEFAULT: "hsl(var(--ring))",
           },
           content: {
-            subtle: "#9ca3af", 
+            subtle: "#9ca3af",
             DEFAULT: "hsl(var(--foreground))",
-            emphasis: "#374151", 
-            strong: "#111827", 
-            inverted: "#ffffff", 
+            emphasis: "#374151",
+            strong: "#111827",
+            inverted: "#ffffff",
           },
         },
       },

@@ -1,29 +1,27 @@
-// taskflow/context/AuthContext.tsx
-"use client"; // Marca este componente como um Client Component no Next.js
+"use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { auth } from '../lib/firebase'; // Importa a instância de autenticação do Firebase
+import { auth } from '../lib/firebase';
 import {
   User,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile // Importante: Importar isso
 } from 'firebase/auth';
 
-// Define o tipo para o contexto de autenticação
 interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
-  signup: (email: string, password: string) => Promise<any>;
+  // Atualizado para receber o nome
+  signup: (email: string, password: string, name: string) => Promise<any>;
   login: (email: string, password: string) => Promise<any>;
   logout: () => Promise<void>;
 }
 
-// Cria o contexto
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Hook personalizado para usar o contexto de autenticação
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -36,25 +34,28 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Provedor de autenticação que gerencia o estado do usuário
 export function AuthProvider({ children }: AuthProviderProps) {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Efeito para observar mudanças no estado de autenticação do Firebase
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setLoading(false);
     });
-
-    // Limpa o observador quando o componente é desmontado
     return unsubscribe;
   }, []);
 
-  // Funções de autenticação
-  const signup = (email: string, password: string) => {
-    return createUserWithEmailAndPassword(auth, email, password);
+  // Função signup atualizada
+  const signup = async (email: string, password: string, name: string) => {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    // Atualiza o perfil do usuário com o nome
+    await updateProfile(userCredential.user, {
+      displayName: name
+    });
+    // Força atualização do estado local para refletir o nome imediatamente
+    setCurrentUser({ ...userCredential.user, displayName: name });
+    return userCredential;
   };
 
   const login = (email: string, password: string) => {
@@ -75,7 +76,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children} {/* Renderiza os filhos apenas depois que o estado de autenticação for carregado */}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
