@@ -7,6 +7,7 @@ import { useTasks } from "../../../hooks/useTasks";
 import { Task } from "../../../types";
 import { TaskModal } from "../../../components/tasks/TaskModal";
 import { Loader2, Edit, Trash } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   DndContext,
@@ -262,15 +263,32 @@ export default function KanbanPage() {
   };
 
   // Helpers de CRUD
-  const handleDelete = async (taskId: string) => {
-    if (confirm("Deletar tarefa?")) {
-      setIsDeletingTask(taskId);
-      try {
-        await deleteTask(taskId);
-      } finally {
-        setIsDeletingTask(null);
-      }
-    }
+  const handleDelete = (taskId: string) => {
+    toast("Excluir Tarefa?", {
+      description: "Tem certeza que deseja deletar esta tarefa? A ação é irreversível.",
+      action: {
+        label: "Excluir",
+        onClick: async () => {
+          setIsDeletingTask(taskId);
+          try {
+            await deleteTask(taskId);
+            toast.success("Tarefa deletada com sucesso!");
+          } catch (error) {
+            console.error("Erro ao deletar:", error);
+            toast.error("Erro ao deletar tarefa.");
+          } finally {
+            setIsDeletingTask(null);
+          }
+        },
+      },
+      cancel: {
+        label: "Cancelar",
+      },
+      actionButtonStyle: {
+        backgroundColor: "#ef4444", // Vermelho para indicar perigo
+        color: "white",
+      },
+    });
   };
 
   const dropAnimation: DropAnimation = {

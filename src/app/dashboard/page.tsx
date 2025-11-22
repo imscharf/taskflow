@@ -10,6 +10,7 @@ import { useTasks } from "../../../hooks/useTasks";
 import { TaskPriority } from "../../../types";
 import { TaskList } from "../../../components/tasks/TaskList";
 
+
 export default function DashboardPage() {
   const { currentUser, loading: authLoading } = useAuth();
   const { tasks, loading: tasksLoading, error: tasksError, refreshTasks } = useTasks();
