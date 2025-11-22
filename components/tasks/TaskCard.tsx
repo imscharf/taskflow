@@ -6,6 +6,7 @@ import { useState } from "react";
 import { CheckCircle2, Circle, Edit, Trash, Calendar, Tag, AlertCircle, Loader2 } from "lucide-react";
 import { ProgressCircle } from "@tremor/react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 interface TaskCardProps {
   task: Task;
@@ -20,11 +21,11 @@ export function TaskCard({ task, onDelete }: TaskCardProps) {
   const getPriorityColor = (priority: TaskPriority) => {
     switch (priority) {
       case TaskPriority.HIGH:
-        return "bg-red-100 text-red-800 border-red-300 dark:bg-red-600/30 dark:text-red-900 dark:border-red-800";
+        return "bg-red-100 text-black border-red-300 dark:bg-red-700/30 dark:text-red-200 dark:border-red-800";
       case TaskPriority.MEDIUM:
-        return "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-600/30 dark:text-yellow-900 dark:border-yellow-800";
+        return "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-700/30 dark:text-yellow-200 dark:border-yellow-800";
       case TaskPriority.LOW:
-        return "bg-green-100 text-green-800 border-green-300 dark:bg-green-600/30 dark:text-green-900 dark:border-green-800";
+        return "bg-green-100 text-green-800 border-green-300 dark:bg-green-700/30 dark:text-green-200 dark:border-green-800";
       default:
         return "bg-muted text-muted-foreground border-border";
     }
@@ -33,9 +34,9 @@ export function TaskCard({ task, onDelete }: TaskCardProps) {
   const getStatusColor = (status: Task["status"]) => {
     switch (status) {
       case "A Fazer":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-600/30 dark:text-blue-900";
+        return "bg-blue-100 text-blue-800 dark:bg-blue-700/30 dark:text-blue-200";
       case "Fazendo":
-        return "bg-orange-100 text-orange-800 dark:bg-orange-600/30 dark:text-orange-900";
+        return "bg-orange-100 text-orange-800 dark:bg-orange-700/30 dark:text-orange-200";
       case "Concluído":
         return "bg-green-100 text-green-800 dark:bg-green-600/30 dark:text-green-900";
       default:
@@ -52,25 +53,41 @@ export function TaskCard({ task, onDelete }: TaskCardProps) {
       await updateTask(task.id, { subtasks: updatedSubtasks });
     } catch (error) {
       console.error("Erro ao atualizar sub-tarefa:", error);
-      alert("Erro ao atualizar sub-tarefa.");
+      toast.error("Erro ao atualizar sub-tarefa.");
     } finally {
       setIsUpdatingSubtask(null);
     }
   };
 
-  const handleDeleteTask = async () => {
-    if (confirm(`Tem certeza que deseja deletar a tarefa "${task.title}"?`)) {
-      setIsDeleting(true);
-      try {
-        await deleteTask(task.id);
-        onDelete?.(task.id);
-      } catch (error) {
-        console.error("Erro ao deletar tarefa:", error);
-        alert("Erro ao deletar tarefa.");
-      } finally {
-        setIsDeleting(false);
-      }
-    }
+  const handleDeleteTask = () => {
+    toast("Excluir Tarefa?", {
+      description: `Tem certeza que deseja remover "${task.title}"? Essa ação não pode ser desfeita.`,
+      action: {
+        label: "Excluir",
+        onClick: async () => {
+          setIsDeleting(true);
+          try {
+            await deleteTask(task.id);
+            onDelete?.(task.id);
+            toast.success("Tarefa removida com sucesso!");
+          } catch (error) {
+            console.error("Erro ao deletar tarefa:", error);
+            toast.error("Erro ao deletar tarefa.");
+          } finally {
+            setIsDeleting(false);
+          }
+        },
+      },
+      cancel: {
+        label: "Cancelar",
+        onClick: () => {
+        } 
+      },
+      actionButtonStyle: {
+        backgroundColor: "#ef4444",
+        color: "white",
+      },
+    });
   };
 
   const isOverdue = new Date(task.dueDate) < new Date() && task.status !== "Concluído";

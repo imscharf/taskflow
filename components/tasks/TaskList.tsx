@@ -1,37 +1,19 @@
-// taskflow/components/tasks/TaskList.tsx (Atualizado)
 "use client";
 
-import { useTasks } from "../../hooks/useTasks";
+import { Task } from "../../types";
 import { TaskCard } from "./TaskCard";
-import { Loader2 } from "lucide-react";
 
-export function TaskList() {
-  const { tasks, loading, error } = useTasks();
-  // const [editingTask, setEditingTask] = useState<Task | null>(null); // Removido
+interface TaskListProps {
+  tasks: Task[];
+  onUpdate: () => void; // Nova prop para recarregar dados
+}
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-10">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-        <p className="ml-3 text-lg text-gray-700">Carregando suas tarefas...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center py-10 text-red-600 text-lg">
-        <p>{error}</p>
-        <p>Por favor, tente novamente mais tarde.</p>
-      </div>
-    );
-  }
-
+export function TaskList({ tasks, onUpdate }: TaskListProps) {
   if (tasks.length === 0) {
     return (
-      <div className="text-center py-10">
-        <p className="text-xl text-gray-600">Você não tem nenhuma tarefa ainda.</p>
-        <p className="text-md text-gray-500 mt-2">Use o formulário acima para adicionar sua primeira tarefa!</p>
+      <div className="text-center py-10 border-2 border-dashed border-border rounded-lg bg-muted/20">
+        <p className="text-xl text-muted-foreground">Você não tem nenhuma tarefa ainda.</p>
+        <p className="text-md text-muted-foreground/80 mt-2">Use o formulário acima para adicionar sua primeira tarefa!</p>
       </div>
     );
   }
@@ -42,11 +24,10 @@ export function TaskList() {
         <TaskCard
           key={task.id}
           task={task}
-          // onEdit removido
-          // onDelete pode ser tratado diretamente pelo TaskCard ou passar um handler
+          // Quando o card deletar, ele chama essa função que avisa o pai
+          onDelete={() => onUpdate()} 
         />
       ))}
-      {/* TaskModal removido */}
     </div>
   );
 }

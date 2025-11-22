@@ -88,3 +88,115 @@
     border-color: hsl(var(--primary)) !important;
     color: hsl(var(--primary-foreground)) !important;
 }
+.dark .recharts-text {
+  fill: #e5e7eb !important; /* Cinza claro */
+}
+
+/* 2. CORREÇÃO DO DONUT: Força a cor do texto interno (tspan) */
+/* Isso resolve o problema do "3 tarefa(s)" no meio da rosca */
+.dark .recharts-text tspan {
+  fill: #ffffff !important; /* Branco puro */
+}
+
+/* 3. Linhas de grade sutis */
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: #374151 !important; /* Cinza escuro */
+}
+
+/* 4. Legenda (Bolinhas e texto abaixo do gráfico) */
+.dark .recharts-legend-item-text {
+  color: #e5e7eb !important;
+}
+
+/* 5. Tooltips (Caixa flutuante) */
+.dark .recharts-tooltip-cursor {
+  fill: #374151 !important;
+  opacity: 0.4;
+}
+
+/* 6. Classes de texto específicas do Tremor (caso usem HTML em vez de SVG) */
+.dark .tremor-content,
+.dark .tremor-content-subtle,
+.dark .tremor-legend-text,
+.dark .tremor-label { 
+  color: #d1d5db !important;
+}
+
+.dark .tremor-content-emphasis,
+.dark .tremor-content-strong,
+.dark .tremor-title,
+.dark .tremor-metric {
+  color: #ffffff !important;
+}
+
+/* 7. Fundo da Tooltip no modo escuro */
+.dark .tremor-bg-background {
+  background-color: #1f2937 !important; /* Cinza 800 */
+  border-color: #374151 !important;
+  color: #fff !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}.dark .recharts-text {
+  fill: #e5e7eb !important; /* Cinza claro */
+}
+
+/* 2. CORREÇÃO DO DONUT: Força a cor do texto interno (tspan) */
+/* Isso resolve o problema do "3 tarefa(s)" no meio da rosca */
+.dark .recharts-text tspan {
+  fill: #ffffff !important; /* Branco puro */
+}
+
+/* 3. Linhas de grade sutis */
+.dark .recharts-cartesian-grid-horizontal line,
+.dark .recharts-cartesian-grid-vertical line {
+  stroke: #374151 !important; /* Cinza escuro */
+}
+
+/* 4. Legenda (Bolinhas e texto abaixo do gráfico) */
+.dark .recharts-legend-item-text {
+  color: #e5e7eb !important;
+}
+
+/* 5. Tooltips (Caixa flutuante) */
+.dark .recharts-tooltip-cursor {
+  fill: #374151 !important;
+  opacity: 0.4;
+}
+
+/* 6. Classes de texto específicas do Tremor (caso usem HTML em vez de SVG) */
+.dark .tremor-content,
+.dark .tremor-content-subtle,
+.dark .tremor-legend-text,
+.dark .tremor-label { 
+  color: #d1d5db !important;
+}
+
+.dark .tremor-content-emphasis,
+.dark .tremor-content-strong,
+.dark .tremor-title,
+.dark .tremor-metric {
+  color: #ffffff !important;
+}
+
+/* 7. Fundo da Tooltip no modo escuro */
+.dark .tremor-bg-background {
+  background-color: #1f2937 !important; /* Cinza 800 */
+  border-color: #374151 !important;
+  color: #fff !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.dark .fill-tremor-content-emphasis {
+  fill: #ffffff !important; /* Branco puro */
+}
+
+.dark select option {
+  background-color: hsl(var(--card));
+  color: hsl(var(--foreground));
+}
+
+/* Garante que no modo claro fique normal */
+select option {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}

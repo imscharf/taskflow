@@ -16,12 +16,10 @@ export function useTasks() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Função para buscar tarefas via Axios
   const fetchTasks = useCallback(async () => {
     if (!currentUser) return;
     
     try {
-      // Chamada à API criada (Route Handler)
       const response = await axios.get(`/api/tasks?userId=${currentUser.uid}`);
       setTasks(response.data);
       setError(null);
@@ -33,7 +31,6 @@ export function useTasks() {
     }
   }, [currentUser]);
 
-  // Carrega tarefas inicial
   useEffect(() => {
     if (currentUser) {
       fetchTasks();
@@ -72,10 +69,7 @@ export function useTasks() {
         progress: initialProgress,
       };
 
-      // POST via Axios
       await axios.post('/api/tasks', newTaskData);
-      
-      // Atualiza a lista após adicionar
       await fetchTasks();
 
     } catch (err: any) {
@@ -85,47 +79,60 @@ export function useTasks() {
     }
   }, [currentUser, fetchTasks]);
 
+  // --- CORREÇÃO IMPORTANTE AQUI (Optimistic Update) ---
   const updateTask = useCallback(async (taskId: string, updatedFields: Partial<Task>) => {
     if (!currentUser) throw new Error("Usuário não autenticado.");
     
+    // 1. Guarda o estado anterior caso precise reverter
+    const previousTasks = [...tasks];
+
+    // 2. Atualiza o estado local IMEDIATAMENTE
+    setTasks(prev => prev.map(t => {
+      if (t.id === taskId) {
+        let fieldsToUpdate: any = { ...updatedFields };
+        if (updatedFields.subtasks !== undefined) {
+          fieldsToUpdate.progress = calculateProgress(updatedFields.subtasks);
+        }
+        return { ...t, ...fieldsToUpdate };
+      }
+      return t;
+    }));
+    
     try {
       let fieldsToUpdate: any = { ...updatedFields };
-      
       if (updatedFields.subtasks !== undefined) {
         fieldsToUpdate.progress = calculateProgress(updatedFields.subtasks);
       }
       
-      // PUT via Axios
+      // 3. Envia para o servidor em background
       await axios.put(`/api/tasks/${taskId}`, fieldsToUpdate);
       
-      // Atualiza a lista após editar
-      // Otimização otimista: atualiza o estado local antes para ser rápido
-      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...fieldsToUpdate } : t));
-      
-      // Opcional: recarregar do servidor para garantir consistência
-      // await fetchTasks(); 
     } catch (err: any) {
       console.error("Erro ao atualizar tarefa:", err);
       setError("Não foi possível atualizar a tarefa.");
+      
+      // 4. Se der erro, reverte para o estado anterior
+      setTasks(previousTasks);
       throw err;
     }
-  }, [currentUser]);
+  }, [currentUser, tasks]);
 
   const deleteTask = useCallback(async (taskId: string) => {
     if (!currentUser) throw new Error("Usuário não autenticado.");
     
+    // Optimistic delete
+    const previousTasks = [...tasks];
+    setTasks(prev => prev.filter(t => t.id !== taskId));
+    
     try {
-      // DELETE via Axios
       await axios.delete(`/api/tasks/${taskId}`);
-      
-      // Atualiza a lista removendo o item localmente
-      setTasks(prev => prev.filter(t => t.id !== taskId));
     } catch (err: any) {
       console.error("Erro ao deletar tarefa:", err);
       setError("Não foi possível deletar a tarefa.");
+      setTasks(previousTasks); // Reverte se falhar
       throw err;
     }
-  }, [currentUser]);
+  }, [currentUser, tasks]);
 
   return { tasks, loading, error, addTask, updateTask, deleteTask, refreshTasks: fetchTasks };
 }

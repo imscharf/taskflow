@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { LogOut, User as UserIcon, CalendarDays, LayoutDashboard, Menu, X } from "lucide-react";
 import { useState } from "react";
 import { ThemeToggle } from "../ui/ThemeToggle";
+import { toast } from "sonner";
 
 export function Navbar() {
   const { currentUser, logout, loading } = useAuth();
@@ -24,7 +25,7 @@ export function Navbar() {
       setIsMenuOpen(false);
     } catch (error) {
       console.error("Erro ao fazer logout:", error);
-      alert("Erro ao fazer logout. Tente novamente.");
+      toast.error("Erro ao fazer logout. Tente novamente.");
     }
   };
 

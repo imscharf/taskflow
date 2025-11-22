@@ -6,8 +6,19 @@ module.exports = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-    // Caminho necessário para componentes do Tremor
     './node_modules/@tremor/**/*.{js,ts,jsx,tsx}',
+  ],
+  // SAFELIST EXPLÍCITA (Sem Regex para garantir)
+  safelist: [
+    // Cores de fundo
+    "bg-blue-500", "bg-emerald-500", "bg-orange-500", "bg-indigo-500", "bg-red-500", "bg-yellow-500",
+    // Cores de preenchimento (Gráficos)
+    "fill-blue-500", "fill-emerald-500", "fill-orange-500", "fill-indigo-500", "fill-red-500", "fill-yellow-500",
+    // Cores de texto
+    "text-blue-500", "text-emerald-500", "text-orange-500", "text-indigo-500", "text-red-500", "text-yellow-500",
+    // Bordas e Anéis
+    "border-blue-500", "border-emerald-500", "border-orange-500", "border-indigo-500", "border-red-500",
+    "ring-blue-500", "ring-emerald-500", "ring-orange-500", "ring-indigo-500", "ring-red-500",
   ],
   theme: {
     container: {
@@ -52,22 +63,7 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        animation: {
-          spotlight: "spotlight 2s ease .75s 1 forwards",
-        },
-        keyframes: {
-          spotlight: {
-            "0%": {
-              opacity: 0,
-              transform: "translate(-72%, -62%) scale(0.5)",
-            },
-            "100%": {
-              opacity: 1,
-              transform: "translate(-50%,-40%) scale(1)",
-            },
-          },
-        },
-        // Cores mapeadas para o Tremor usar as variáveis do tema
+        // Configuração Tremor com cores HEX fixas para evitar conflitos
         tremor: {
           brand: {
             faint: "#eff6ff",
@@ -80,18 +76,18 @@ module.exports = {
           background: {
             muted: "#f9fafb",
             subtle: "#f3f4f6",
-            DEFAULT: "hsl(var(--background))",
+            DEFAULT: "#ffffff",
             emphasis: "#374151",
           },
           border: {
-            DEFAULT: "hsl(var(--border))",
+            DEFAULT: "#e5e7eb",
           },
           ring: {
-            DEFAULT: "hsl(var(--ring))",
+            DEFAULT: "#e5e7eb",
           },
           content: {
             subtle: "#9ca3af",
-            DEFAULT: "hsl(var(--foreground))",
+            DEFAULT: "#6b7280",
             emphasis: "#374151",
             strong: "#111827",
             inverted: "#ffffff",
@@ -102,6 +98,21 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      animation: {
+        spotlight: "spotlight 2s ease .75s 1 forwards",
+      },
+      keyframes: {
+        spotlight: {
+          "0%": {
+            opacity: 0,
+            transform: "translate(-72%, -62%) scale(0.5)",
+          },
+          "100%": {
+            opacity: 1,
+            transform: "translate(-50%,-40%) scale(1)",
+          },
+        },
       },
     },
   },
