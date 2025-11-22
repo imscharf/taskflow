@@ -6,7 +6,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="relative w-full min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-background overflow-hidden px-4">
+    <div className="relative w-full min-h-[calc(90vh-4.5rem)] flex flex-col items-center justify-center bg-background overflow-hidden px-4">
       
       {/* Efeitos de Fundo (Blobs de luz) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -25,7 +25,7 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/50 border border-border mb-6 text-sm font-medium text-muted-foreground backdrop-blur-sm"
+          className="inline-flex items-center gap-2 px-2 py-1 rounded-full bg-accent/50 border border-border mb-6 text-sm font-medium text-muted-foreground backdrop-blur-sm"
         >
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>

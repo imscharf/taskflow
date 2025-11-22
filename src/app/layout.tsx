@@ -32,7 +32,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Navbar />
-            <main className="grow mt-16">
+            <main className="grow ">
               {children}
             </main>
             <Footer />

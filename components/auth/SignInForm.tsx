@@ -80,7 +80,7 @@ export function SignInForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-md"
+          className="w-full py-2.5 px-4 rounded-lg text-sm font-semibold border bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-md"
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>

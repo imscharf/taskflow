@@ -67,6 +67,10 @@
 .dark .fc-theme-standard th {
   border-color: hsl(var(--border));
 }
+.dark .fc-scrollgrid-sync-inner{
+  background-color: hsl(var(--background));
+}
+
 .dark .fc-col-header-cell-cushion,
 .dark .fc-daygrid-day-number {
   color: hsl(var(--foreground));
